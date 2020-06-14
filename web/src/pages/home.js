@@ -4,6 +4,8 @@ import Paper from '@material-ui/core/Paper';
 //import Modal from '@material-ui/core/Modal';
 import f from '../images/image.png'
 import clsx from 'clsx';
+import ButtonAppBar from './../components/appBar';
+
 //import { urlencoded } from 'body-parser';
 
 const useStyles = makeStyles((theme) => ({
@@ -61,6 +63,8 @@ export default function Home() {
       }
   }
   return (
+    <React.Fragment>
+    <ButtonAppBar/> 
     <div className={clsx([classes.root,classes.margin])}>
     <Paper elevation={3} className={classes.paper} >
        <img src={f} alt="bgimg" style={styles.paperStyle} />
@@ -70,5 +74,6 @@ export default function Home() {
         <h3>features</h3>
     </Paper>
     </div>
+    </React.Fragment>
   );
 }

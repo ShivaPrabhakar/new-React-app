@@ -107,12 +107,12 @@ UserSchema.static({
     },
     
     getUserById : function(id,callback){
-      this.findById(id,callback);
+      User.findById(id,callback);
     },
     
     
     getUserByUsername : function(username,callback){
-      this.find({username: username},callback);
+      User.find({username: username},callback);
     },
     
     createUser : function(newUser,callback){
@@ -131,11 +131,13 @@ UserSchema.static({
       
     },
     
-    findByToken : function (token, callback) {
-      var Superuser = this;
-      jwt.verify(token,config.database.secret,function(err, decode){
+    findByToken : function (tokenData, callback) {
+      var Superuser = User;
+      let token = tokenData.token;
+      let gId = tokenData.googleId;
+      jwt.verify(token,config.db.secret,function(err, decode){
         if(err) throw err;
-        this.findOne({"_id":decode}, function(err, Superuser){
+        User.findOne({"_id":decode}, function(err, Superuser){
               if(err) {
                 console.log(err);
                 return callback(err);

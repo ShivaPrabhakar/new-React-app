@@ -13,6 +13,11 @@ import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
 import LockOpenRoundedIcon from '@material-ui/icons/LockOpenRounded';
+//import { CookiesProvider } from 'react-cookie';
+import Cookies from 'universal-cookie';
+import { useHistory } from 'react-router-dom';
+import ButtonAppBar from './../components/appBar';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,12 +43,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = ()=> {
+  const history = useHistory();
   const classes = useStyles();
   const [user,SetUser] = useState({
     logusername:'',
     logpassword:'',
     showPassword: false,
   })
+
+  const cookies = new Cookies();
+  // const [cookie,setCookie] = useCookies(['token']);
+
  // const {logusername,logpassword,showPassword} = user;
 
   const config = {
@@ -58,6 +68,12 @@ const Login = ()=> {
   //   setValues({ ...values, [prop]: event.target.value });
   // };
 
+  const settingCookie = (token) => {
+  // setCookie({...cookie, token: token });
+  // setCookie('token', token, { path: '/chat' });
+  cookies.set('token',token , { path: '/chat' });
+  }
+      
   const handleClickShowPassword = () => {
     SetUser({ ...user, showPassword: !user.showPassword });
   };
@@ -74,16 +90,21 @@ const Login = ()=> {
       logpassword:user.logpassword
     }
     const res = await axios.post('/api/login',data,config);
-    console.log(res);
+    // console.log(res);
     if(res.data.login){
-      console.log("login successfull");
+      // console.log("res == ",res);
+      settingCookie(res.data.token);
+      history.push("/chat");
+      
     }
     else{
-      console.log("loign failed");
+      console.log("loign failed"); 
     }
   }
 
   return (
+    <React.Fragment>
+    <ButtonAppBar/> 
     <div  className={clsx(classes.margin)}>
     <Typography variant="h4" component="h2" align="left" className={classes.login}>
       Login
@@ -137,7 +158,7 @@ const Login = ()=> {
               ),
             }}
           
-            labelWidth={70}
+           
           />
       <br></br>
       <Button variant="contained" color="primary" endIcon={<LockOpenRoundedIcon/>}onClick={loginFun}>
@@ -145,6 +166,7 @@ const Login = ()=> {
 </Button>
       </FormControl>
     </div>
+    </React.Fragment>
   );
 }
 

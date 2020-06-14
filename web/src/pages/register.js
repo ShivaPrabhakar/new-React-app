@@ -16,7 +16,11 @@ import ExitToAppRoundedIcon from '@material-ui/icons/ExitToAppRounded';
 import PersonRoundedIcon from '@material-ui/icons/PersonRounded';
 import EmailRoundedIcon from '@material-ui/icons/EmailRounded';
 import FlashMassage from 'react-flash-message';
- 
+import { useHistory } from 'react-router-dom';
+import ButtonAppBar from './../components/appBar';
+
+//import Login from './Login';
+
 // inside render
 
 const useStyles = makeStyles((theme) => ({
@@ -45,6 +49,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Register = ()=> {
+  let history = useHistory();
+
   const classes = useStyles();
   const [user,SetUser] = useState({
     name:'',
@@ -221,7 +227,7 @@ const isUsernameExists = async (username) =>{
             }
         }
     }
-    console.log(validate1);
+     console.log(validate1);
     var data = {
       name:user.name,
       email:user.email,
@@ -232,10 +238,10 @@ const isUsernameExists = async (username) =>{
     
     if(validate1){
         const res = await axios.post('/api/register',data,config);
-        console.log(res);
-
+        // console.log(res);
         if(res.data.Signup){
-        console.log("register successfull");
+          console.log("register successfull");
+          history.push("/login");
         }
         else{
         console.log("register failed");
@@ -247,6 +253,8 @@ const isUsernameExists = async (username) =>{
   }
 
   return (
+    <React.Fragment>
+    <ButtonAppBar/> 
     <div  className={clsx(classes.margin)}>
     <Typography variant="h4" component="h2" align="left" className={classes.login}>
       Register
@@ -364,6 +372,7 @@ const isUsernameExists = async (username) =>{
 </Button>
       </FormControl>
     </div>
+    </React.Fragment>
   );
 }
 

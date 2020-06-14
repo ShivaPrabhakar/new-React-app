@@ -68,7 +68,7 @@ passport.use(
 
           User.findOneAndUpdate({ _id: user._id }, { token:request.cookies.w_auth  },{new : true},function(err,data){
 
-          console.log("in in in",data);
+          console.log("in in in");
 
           done(err,data);
 
@@ -118,11 +118,11 @@ passport.use(
 
 let auth = (req, res, next) => {
 
-  console.log(req);
+  // console.log(req);
 
-  var userReq = req.user;
+  // var userReq = req.user;
 
-  console.log(userReq);
+  // console.log(userReq);
 
   let token = req.cookies.w_auth;
 
@@ -132,21 +132,21 @@ let auth = (req, res, next) => {
 
   console.log("token1 = ",token1);
 
-  var gid = "";
+  // var gid = "";
 
-  if(userReq.googleId !== ""){
+  // if(userReq.googleId !== ""){
 
-      gid = userReq.googleId;
+  //     gid = userReq.googleId;
 
-      token = req.user.token;
+  //     token = req.user.token;
 
-  }
+  // }
 
   var data = {
 
-    token : token,
+    token : req.cookies.w_auth,
 
-    googleId : gid
+    googleId : req.cookies.w_auth
 
   }
 
@@ -166,11 +166,11 @@ let auth = (req, res, next) => {
 
       });
 
-
+     
 
     req.token = token;
 
-    req.user = user;
+    // req.user = user;
 
     next();
 

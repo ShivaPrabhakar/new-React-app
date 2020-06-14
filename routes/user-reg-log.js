@@ -184,7 +184,7 @@ module.exports = (app) => {
 
            if(req.cookie.w_auth !== '')
 
-                res.redirect('/api/chat');
+                res.redirect('/chat');
 
        }
 
@@ -192,7 +192,7 @@ module.exports = (app) => {
 
            if(req.cookie.w_authExp !== '')
 
-                res.redirect('/api/chat');
+                res.redirect('/chat');
 
        }
 
@@ -206,6 +206,7 @@ module.exports = (app) => {
 
             if(data !== "error" ){
 
+                console.log("suces");
                 res.cookie("w_authExp", data.token);
 
                 res.cookie("w_auth",data.token);
@@ -271,10 +272,11 @@ module.exports = (app) => {
 
 
       app.post("/api/logout", auth, (req, res) => {
+        console.log("in api logout");
 
-          console.log(req.cookies.w_auth);
+        //   console.log(req.cookies.w_authExp);
 
-        User.findOneAndUpdate({ token: req.cookies.w_auth }, { token: "", tokenExp: "" }, (err, doc) => {
+        User.findOneAndUpdate({ token: req.cookies.w_authExp },{new : true} ,{ token: "", tokenExp: "" }, (err, doc) => {
 
             if (err) return res.json({ success: false, err });
 
@@ -289,8 +291,8 @@ module.exports = (app) => {
             res.cookie("w_authExp","");
 
             console.log(res.cookie);
-
-            res.redirect('/api/login');
+            res.status(200).json({logout:'true',token: doc.token})
+            // res.redirect('/login');
 
         });
 
