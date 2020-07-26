@@ -10,7 +10,7 @@ const User = require('../models/user_model');
 
 const passport = require('passport');
 
-const {loginVerification,formValidation} = require('./../services/validations');
+const {loginVerification,formValidation,userSearch} = require('./../services/user');
 
 console.log(typeof(User));
 
@@ -297,6 +297,20 @@ module.exports = (app) => {
         });
 
     });
+
+    app.get('/search',async (req,res) => {
+        console.log(req._parsedOriginalUrl.query.split('=')[1]);
+        let searchText = '^'+req._parsedOriginalUrl.query.split('=')[1];
+        let searchResult = await userSearch(searchText);
+        if(searchResult.length > 0 ){
+            res.status(200)
+            res.send(searchResult);
+        }
+        else{ 
+            res.status(400);
+            res.send("No user found");
+        }
+    })
 
 }
 

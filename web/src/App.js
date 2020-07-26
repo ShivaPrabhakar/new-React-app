@@ -2,13 +2,15 @@ import React from 'react';
 import Login from './pages/Login';
 import Register from './pages/register';
 import Home from './pages/home';
+import LeftPane from './pages/LeftPane';
 import {Route,Switch,BrowserRouter as Router} from 'react-router-dom';
 import { CookiesProvider } from 'react-cookie';
+
+
 function App() {
   return (
+    
     <div className="App">    
-      
-
       <Router> 
         <Switch>  
           <Route path='/home' component={Home}/>
@@ -22,11 +24,12 @@ function App() {
         </Switch>
         <CookiesProvider>
           <Switch>
-            <Route path='/chat' component={Home}/>
+            <Route path='/chat' component={LeftPane}/>
           </Switch>
         </CookiesProvider>
       </Router>
     </div>
+
   );
 }
 

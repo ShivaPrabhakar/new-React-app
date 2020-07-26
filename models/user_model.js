@@ -74,8 +74,15 @@ var UserSchema = new schema({
     },
     friends: {
         type: []
+    },
+    Image:{
+      type: String,
+      default : '',
+    },
+    chats:{
+      type:[],
+      index:true
     }
-
 });
 UserSchema.set('toObject', { virtuals: true });
 // UserSchema.index({
@@ -145,7 +152,30 @@ UserSchema.static({
               callback(null, Superuser);
           })
       })
-    }
+    },
+  getFriends : async(token,pno,psize) => {
+      let user = await User.findOne({ token: token });
+      let friends = user.friends;
+      let users = await User.find({"_id":{$in : friends}}).sort().skip(psize*pno).limit(psize);
+      return users;
+  },
+  userSearchByName : async (searchText) => {
+
+    return await User.find({name:{$regex : searchText , $options : 'i'}})
+     .sort({name : -1})
+     .limit(7)
+  },
+  userSearchByUserName :  async (searchText) => {
+    return await User.find({username:{$regex : searchText , $options : 'i'}})
+     .sort({name : -1})
+     .limit(7)
+  },
+  userSearchByEmail : async (searchText) => {
+    return await User.find({email:{$regex : searchText , $options : 'i'}})
+     .sort({name : -1})
+     .limit(7)
+  },
+
 });
 
 const User = mongoose.model('User',UserSchema);
