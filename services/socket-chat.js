@@ -44,35 +44,48 @@ function socketConnect(){
 
 
 
-function inputEvent(data){
-    console.log(data);
-    let id = data.name.toString();
-    let message = data.message;
-    User.findOne({_id:id},function(err,user){
-        if(err) throw err;
-        name = user.name;
-      if(name == '' || message == ''){
-            sendStatus('Please enter a name and message');
-        } else {
-            let chat = {
-                sender:name,
-                message:message,
-            };
-            Chat.insert(chat,function(err,data){
-                if(err) throw err;
-                socket.emit('output', [data]);
-                sendStatus({
-                    message: 'Message sent',
-                    clear: true
-                });
-            });
-        }
+async function inputEvent(data){
+//     console.log(data);
+//     let id = data.name.toString();
+//     let message = data.message;
+//     User.findOne({_id:id},function(err,user){
+//         if(err) throw err;
+//         name = user.name;
+//       if(name == '' || message == ''){
+//             sendStatus('Please enter a name and message');
+//         } else {
+//             let chat = {
+//                 sender:name,
+//                 message:message,
+//             };
+//             Chat.insert(chat,function(err,data){
+//                 if(err) throw err;
+//                 socket.emit('output', [data]);
+//                 sendStatus({
+//                     message: 'Message sent',
+//                     clear: true
+//                 });
+//             });
+//         }
+//     });
+
+    //    console.log('new message');
+    //    console.log(message);
+    const mess = Message({
+      message: data.message,
+      room_id: data.room_id,
+      author_name: data.author_name,
+      author_id: data.author_id,
     });
+    io.to(message.room_id).emit("new_message", mess);
+    await mess.save();
+
 }
+// }
 
 
 function previousChat(data){
-    Chat.find({},function(err,chatdata){
+    Message.find({},function(err,chatdata){
         if(err) throw err;
         socket.emit('previousChat', chatdata);
         sendStatus({
@@ -84,7 +97,7 @@ function previousChat(data){
 
 function clearEvent(){
     console.log("clear Event ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")
-    Chat.deleteMany({}, function(err){
+    Message.deleteMany({}, function(err){
         if(err) throw err;
         console.log("delete .,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,")
         socket.emit('cleared');

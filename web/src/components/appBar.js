@@ -149,7 +149,9 @@ const logoutFun = async () =>{
 
 }
 
-const onChange = (e) => setSearchResult({...searchRes, searchRes:e.target.value.trim()})
+const onChange = (e) => {setSearchResult({...searchRes, searchRes:e.target.value.trim()})
+  let res = axios.get('/search',)
+}
 
 const renderMenu = (
   <Menu
