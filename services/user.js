@@ -10,19 +10,23 @@ function loginVerification(username,password,callback){
 
         if(user.length === 0){
             console.log("no user");
-            return ({Login: false, message:'No such user found',status:404});   
+            callback(null,{Login: false, message:'No such user found',status:404});   
 
         }
         console.log("after finding the user");
-         var user1 = user[0];
-       // console.log(user1);
-        User.comparePassword(password,user1,function(err,data){
+        if(user.length>0){
+            var user1 = user[0];
+            console.log(user1);
+            User.comparePassword(password,user1,function(err,data){
 
-            console.log("after comparing the password");
-          //  console.log(data);
-            callback(err,data);                        
+                console.log("after comparing the password");
+            //  console.log(data);
+                let cdData = {Login:true,data}
+                callback(err,cdData);                        
 
-        });
+            });
+        }
+        
 
     });
 

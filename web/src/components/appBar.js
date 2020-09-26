@@ -15,7 +15,6 @@ import axios from 'axios'
 
 import clsx from 'clsx';
 import Cookies from 'universal-cookie';
-import axios from 'axios';
  import { useHistory } from 'react-router-dom';
 // import { Redirect } from 'react-router'
 

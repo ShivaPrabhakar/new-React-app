@@ -1,4 +1,6 @@
 const User = require("../models/user_model");
+const url = require('url');
+const querystring = require('querystring');
 const {getChats,getOrCreateChat,rejectChatReq,acceptChatReq} = require('../services/chat');
 const {getContacts} = require('../services/user');
 module.exports = (app) => {
@@ -15,13 +17,22 @@ module.exports = (app) => {
     app.get('/get/chats',async (req,res)=>{
         let user  = req._parsedOriginalUrl.query.split('=')[1];
         let chats = await getChats(user);
+        if(chats.length>0){
+            res.status(200).send({chats});
+        }
     })
 
     app.get('/getorCreate/chat',async (req,res)=>{
-        let user1  = req._parsedOriginalUrl.query.split("&")[0].split('=')[1];
-        let user2 = req._parsedOriginalUrl.query.split("&")[1].split('=')[1];
-        
+        let user1  = req.query.user1;
+        let user2 = req.query.user2;
+         
         let chat = await getOrCreateChat(user1,user2);
+        if(chat!=null){
+            res.send({chatId:chat.id});
+        }
+        else{
+            res.send("Chat not found");
+        }
     })
 
     app.put('/chat/reject',async (req,res)=>{
@@ -29,7 +40,12 @@ module.exports = (app) => {
         let chatId = req.query.chatId;
         // console.log()
         let reject = await rejectChatReq(chatId);
-        console.log(reject);
+        if(reject.accepted){
+            res.send({reject:true});
+        }
+        else{
+            res.send({reject:false});
+        }
 
     })
 
@@ -38,7 +54,13 @@ module.exports = (app) => {
         console.log(req.query);
         let chatId = req._parsedUrl.query.split('=')[1];
         let accept = await acceptChatReq(chatId);
-        console.log(accept);
+
+        if(accept.accepted){
+            res.send({accept:true});
+        }
+        else{
+            res.send({accept:false});
+        }
     })
 
 }

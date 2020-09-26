@@ -204,7 +204,7 @@ module.exports = (app) => {
 
             if(err) throw err;
 
-            if(data !== "error" ){
+            if(data !== "error" && data.Login ){
 
                 console.log("suces");
                 res.cookie("w_authExp", data.token);
@@ -214,8 +214,8 @@ module.exports = (app) => {
                res.status(200).json({login:'true',token: data.token})
 
             } else{
-
-                return res.status(401).json({Login: false, message:'Password doesn\'t match.'});
+                let msg = data.message || 'Password doesn\'t match.';
+                return res.status(401).json({Login: false, message:msg});
 
             }
 
