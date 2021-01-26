@@ -206,12 +206,12 @@ module.exports = (app) => {
 
             if(data !== "error" && data.Login ){
 
-                console.log("suces");
-                res.cookie("w_authExp", data.token);
+                console.log("login success");
+                res.cookie("w_authExp", data.data.token);
 
-                res.cookie("w_auth",data.token);
+                res.cookie("w_auth",data.data.token);
 
-               res.status(200).json({login:'true',token: data.token})
+               res.status(200).json({login:'true',token: data.data.token})
 
             } else{
                 let msg = data.message || 'Password doesn\'t match.';
@@ -274,27 +274,35 @@ module.exports = (app) => {
       app.post("/api/logout", auth, (req, res) => {
         console.log("in api logout");
 
-        //   console.log(req.cookies.w_authExp);
+          console.log("tokenhfjtf === ",(req.cookies.w_authExp === undefined));
+        let Token = req.cookies.w_authExp;
+        if(Token != undefined) {
+            User.findOneAndUpdate({ token: req.cookies.w_authExp },{new : true} ,{ token: "", tokenExp: "" }, (err, doc) => {
 
-        User.findOneAndUpdate({ token: req.cookies.w_authExp },{new : true} ,{ token: "", tokenExp: "" }, (err, doc) => {
+                if (err) return res.json({ success: false, err });
 
-            if (err) return res.json({ success: false, err });
+                server.on('disconnect', function() {
 
-            server.on('disconnect', function() {
+                    console.log("<<<<<<<<<<<<<<<<<<<<disconected>>>>>>>>>>>>>>")
 
-                console.log("<<<<<<<<<<<<<<<<<<<<disconected>>>>>>>>>>>>>>")
+                });
+
+                res.cookie("w_auth","");
+
+                res.cookie("w_authExp","");
+
+                console.log(res.cookie);
+                res.status(200).json({logout:'true',token: doc.token})
+                // res.redirect('/login');
 
             });
-
-            res.cookie("w_auth","");
-
-            res.cookie("w_authExp","");
-
-            console.log(res.cookie);
-            res.status(200).json({logout:'true',token: doc.token})
-            // res.redirect('/login');
-
-        });
+        }
+        else {
+            res.writeHead(301,
+                {Location: 'http://localhost:3000/home'}
+              );
+            res.end();
+        }
 
     });
 

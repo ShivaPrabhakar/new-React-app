@@ -10,8 +10,16 @@ module.exports = (app) => {
 
     app.get('/get/friends',async (req,res)=>{
         var token =  req.cookies.w_authExp;
-        let contacts = await getContacts(token,0,10);
-        res.send({contacts:contacts});
+        if(token) {
+            let contacts = await getContacts(token,0,10);
+            res.send({contacts:contacts});
+        }
+        else {
+            res.writeHead(301,
+                {Location: 'http://localhost:3000/home'}
+              );
+            res.end();
+        }
     })
 
     app.get('/get/chats',async (req,res)=>{
