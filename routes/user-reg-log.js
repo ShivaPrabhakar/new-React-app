@@ -206,12 +206,12 @@ module.exports = (app) => {
 
             if(data !== "error" && data.Login ){
 
-                console.log("suces");
-                res.cookie("w_authExp", data.token);
+                console.log("suces",data);
+                res.cookie("w_authExp", data.data.token);
 
-                res.cookie("w_auth",data.token);
+                res.cookie("w_auth",data.data.token);
 
-               res.status(200).json({login:'true',token: data.token})
+               res.status(200).json({login:'true',token: data.data.token})
 
             } else{
                 let msg = data.message || 'Password doesn\'t match.';
@@ -301,6 +301,7 @@ module.exports = (app) => {
     app.get('/search',async (req,res) => {
         console.log(req._parsedOriginalUrl.query.split('=')[1]);
         let searchText = '^'+req._parsedOriginalUrl.query.split('=')[1];
+        console.log("searchText ::",searchText);
         let searchResult = await userSearch(searchText);
         if(searchResult.length > 0 ){
             res.status(200)

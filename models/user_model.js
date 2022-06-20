@@ -2,11 +2,33 @@ var mongoose = require('mongoose');
 var schema = mongoose.Schema;
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const config = require('../config/key')
+const config = require('../config/key');
+var modelutil = require('./model_util');
 
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
+
+var oneToOneChatDoc = {
+  // _id: false,
+  _id: {
+      type: schema.Types.ObjectId,
+      ref: 'User',
+      set: modelutil.ignoreEmpty
+  },
+ 
+}
+
+var friends = {
+  // _id: false,
+  _id: {
+      type: schema.Types.ObjectId,
+      ref: 'User',
+      set: modelutil.ignoreEmpty
+  },
+  
+}
+
 
 var UserSchema = new schema({
     name : {
@@ -73,16 +95,17 @@ var UserSchema = new schema({
         default : false,
     },
     friends: {
-        type: []
+      type: [schema.Types.ObjectId],
+      ref: 'User'
     },
     Image:{
       type: String,
       default : '',
     },
-    chats:{
-      type:[],
-      index:true
-    }
+    oneOneChats: {
+      type: [schema.Types.ObjectId],
+      ref: 'User'
+  },
 });
 UserSchema.set('toObject', { virtuals: true });
 // UserSchema.index({
@@ -155,7 +178,12 @@ UserSchema.static({
     },
   getFriends : async(token,pno,psize) => {
       let user = await User.findOne({ token: token });
-      let friends = user.friends;
+      let friends = [];
+      if( user.friends) {
+        friends = user.friends;
+      }
+
+      console.log(user);
       let users = await User.find({"_id":{$in : friends}}).sort().skip(psize*pno).limit(psize);
       return users;
   },

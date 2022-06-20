@@ -50,7 +50,6 @@ module.exports = (app) => {
     })
 
     app.put('/chat/accept',async (req,res)=>{
-        // console.log(req);
         console.log(req.query);
         let chatId = req._parsedUrl.query.split('=')[1];
         let accept = await acceptChatReq(chatId);

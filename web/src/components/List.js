@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,8 +8,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import axios from 'axios';
-import {connect} from 'react-redux';
-import {setContacts,setChats,getToggleVal} from '../actions/Toggle';
+// import {connect} from 'react-redux';
+// import {setContacts,setChats,getToggleVal} from '../actions/Toggle';
 const config = {
     headers:{
       "Content-Type":"application/json"
@@ -25,74 +25,112 @@ const config = {
     }
   }));
 
-  let showContacts;
-  let showChats;
-function ListUI(props){
+const  ListUI =   React.memo(function ListUI(props)  {
   const classes = useStyles;
+  const [contacts,setContacts] = useState([]);
+  const [chats,setChats] = useState([]);
+ 
+  let showContacts = props.showContacts;
+  let showChats = props.showChats;
+  console.log(showContacts, showChats);
+  // useEffect(() => {
+  //   function handleContacts(contacts) {
+  //     setContacts(contacts)
+  //   }
+  //   function handleChats(contacts) {
+  //     setContacts(contacts)
+  //   }
+  // })
 
+  const getChats =  async ()=>{  return setChats([{name : 'shiva'},{ name:'prabhakar'}]);};
 
   const getContacts =  async()=>{
-    let res = await axios.get('/get/friends',config)
-    console.log(res.data.contacts);
-    return  res.data.contacts;
-  };
-  const getChats =  ()=>{  return ['shiva','prabhakar'] };
-  console.log(getContacts());
-  console.log(getChats());
-  
-
-    console.log("ssssss === ",props.s);
-    const setList = () =>{
-      let l ;
-      if(props.s.showContacts === true)
-        l =   getContacts();
-      else
-        l =  getChats();
-      return  (l);
+    if(showContacts) {
+        let res = await axios.get('/get/friends',config)
+        console.log("res data = ",Array.isArray(res.data.contacts));
+          setContacts(res.data.contacts);
+          console.log("assigning to var");
     }
-  let list = setList();
-  console.log(typeof(list));
-  console.log("list  == ",list.length);
-  if(list.length>0){
-    return (
-          <List>
-          
-          {list.map((text, index) => (
-              <React.Fragment>
-            <ListItem button divider="true" classes={classes.listbutton1} key={text} >
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
+  }
+
+  // useEffect(() => {
+  //     getContacts();
+  //     getChats();
+
+  //     // return;
+  //   },[showContacts,showChats]);
+
+    console.log("ssssss === ",props);
+    const setList = () =>{
+      if(props.showContacts === true){
+          getContacts();
+          console.log("got var"); 
+          console.log("res cont ",contacts); 
+          listRendering(contacts);
+      }
+      else {
+        getChats();
+        listRendering(chats);
+      }
+    }
+
+
+    function listRendering (list) {
+      if(list.length>0){
+        return (
+          <React.Fragment>
+              <List>      
+              {list.map((obj, index) => (
+                  <React.Fragment>
+                <ListItem button divider="true" classes={classes.listbutton1} key={obj.name} >
+                  <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                  <ListItemText primary={obj.name} />
+                </ListItem>
+                </React.Fragment>
+              ))}
+            </List>
             </React.Fragment>
-          ))}
-        </List>
+            );
+      }
+      else{
+        return( 
+          <React.Fragment>  
+            <List>     
+                {list.map((obj, index) => (
+                    <React.Fragment>
+                        <ListItem button divider="true" classes={classes.listbutton1} key={obj.name} >
+                            <ListItemText primary={obj.name} />
+                        </ListItem>
+                    </React.Fragment>
+                ))}
+            </List>
+            </React.Fragment>
         );
-  }
-  else{
-    return(   
-       <div>
-         <Typography align='center' variant='body1' variantMapping='h3'>
-            Nothing
-         </Typography>
-      </div>
-    )
-  }
+      }
+    }
+
+  setList();
   
-};
+
+  
+  
+});
 
 
 
 
-const mapStateToProps = (state) =>{
+// const mapStateToProps = (state) =>{
  
-  console.log(state);
-  const s =  {
-    showChats : state.tabs.toggleVal.showChats,
-    showContacts : state.tabs.toggleVal.showContacts
- };
- console.log(s);
-  return { s };
- //  showChats = state.toggleVal.showChats;
-}
+//   console.log(state);
+//   const s =  {
+//     showChats : state.tabs.toggleVal.showChats,
+//     showContacts : state.tabs.toggleVal.showContacts
+//  };
+//  console.log(s);
+//   return { s };
+//  //  showChats = state.toggleVal.showChats;
+// }
 
-export default connect(mapStateToProps,{setContacts,setChats,getToggleVal})(ListUI);
+// export default connect(mapStateToProps,{setContacts,setChats,getToggleVal})(ListUI);
+export default ListUI;
+

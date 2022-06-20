@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import ButtonAppBar from './../components/appBar';
 import IconLabelTabs from '../components/TabBar';
 // import axios from 'axios';
-import {connect} from 'react-redux';
+// import {connect} from 'react-redux';
 import ListUI from '../components/List';
 import {setContacts,setChats,getToggleVal} from '../actions/Toggle';
 const config = {
@@ -55,51 +55,39 @@ var showContacts;
 var showChats;
 
 
- function LeftPane(props) {
+const  LeftPane =  React.memo(function LeftPane(props) {
   const classes = useStyles();
   
-  // const componentWillMount = () =>{
-  //   props.getToggleVal();
-  // }
-  // componentWillMount();
-  // props.showContacts = showContacts;
-  // props.showChats = showChats;
   
-  // const ListUI = async()=> {
-     
-  //     let list;
-  //     console.log("ssssss === ",showContacts,showChats);
-  //   if(props.showContacts)
-  //     list = await getContacts();
-  //   else
-  //     list = await getChats();
-  //   console.log("list  == ",list);
-  //     return (
-  //       <List>
-  //       {list.map((text, index) => (
-  //           <React.Fragment>
-  //         <ListItem button divider="true" classes={classes.listbutton1} key={text} >
-  //           <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-  //           <ListItemText primary={text} />
-  //         </ListItem>
-  //         </React.Fragment>
-  //       ))}
-  //     </List>
-  //     );
-    
-  // };
 
+  const [value, setValue] = React.useState(0);
 
-  // const getContacts =  async()=>{
-  //   let res = await axios.get('/get/friends',config)
-  //   // console.log(res);
-  //   return res.data.contacts;
-  // };
-  // const getChats = ()=>{  return Promise.resolve(['shiva','prabhakar']) };
-  // console.log(getContacts());
-  // console.log(getChats());
+  const [contacts,setContacts] = React.useState({
+    contacts:false,
+    chats:true
+  });
 
-  console.log("props = ",props.s);
+  const [chats,setChats] = React.useState({
+    contacts:true,
+    chats:false
+  });
+
+  const onSetContacts = async (event)=> {
+    event.preventDefault();
+    setContacts(true);
+    setChats(false);
+    console.log(chats, contacts);
+  };
+
+  const onSetChats = async (event)=> {
+    event.preventDefault();
+    setChats(true);
+    setContacts(false);
+    console.log(chats, contacts);
+  };
+
+ 
+  console.log("props = ",props);
 
   return (
 
@@ -117,8 +105,11 @@ var showChats;
       >
         <Toolbar />
         <div className={classes.drawerContainer}>
-        <IconLabelTabs/>
-        <ListUI show={props.s} />
+        <IconLabelTabs onSetContacts={onSetContacts} onSetChats={onSetChats}/>
+            <React.Fragment>
+                <ListUI showContacts={contacts} showChats={chats} />
+
+            </React.Fragment>
         </div>
       </Drawer>
       <main className={classes.content}>
@@ -149,18 +140,19 @@ var showChats;
       </main>
     </div>
   );
-}
+})
 
-const mapStateToProps = (state) =>{
+// const mapStateToProps = (state) =>{
  
-  console.log(state);
-  const s =  {
-    showChats : state.tabs.toggleVal.showChats,
-    showContacts : state.tabs.toggleVal.showContacts
- };
- console.log(s);
-  return { s };
- //  showChats = state.toggleVal.showChats;
-}
+//   console.log(state);
+//   const s =  {
+//     showChats : state.tabs.toggleVal.showChats,
+//     showContacts : state.tabs.toggleVal.showContacts
+//  };
+//  console.log(s);
+//   return { s };
+//  //  showChats = state.toggleVal.showChats;
+// }
 
-export default connect(mapStateToProps,{setContacts,setChats,getToggleVal})(LeftPane);
+// export default connect(mapStateToProps,{setContacts,setChats,getToggleVal})(LeftPane);
+export default LeftPane;

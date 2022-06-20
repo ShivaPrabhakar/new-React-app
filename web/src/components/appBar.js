@@ -10,7 +10,6 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
-import ListUI from '../components/List';
 import axios from 'axios'
 
 import clsx from 'clsx';
@@ -102,8 +101,8 @@ export default function ButtonAppBar() {
 
 
  const classes = useStyles();
- const [anchorEl, setAnchorEl] = React.useState(null);
- const [searchRes,setSearchResult] = React.useState(null);
+ const [anchorEl, setAnchorEl] = React.useState(0);
+ const [searchRes,setSearchResult] = React.useState(0);
 
 
 
@@ -149,7 +148,10 @@ const logoutFun = async () =>{
 }
 
 const onChange = (e) => {setSearchResult({...searchRes, searchRes:e.target.value.trim()})
-  let res = axios.get('/search',)
+console.log(searchRes);
+let searchText = searchRes.searchRes;
+  let res = axios.get('/search',{params:{searchText}});
+  console.log("res in appbar :",res);
 }
 
 const renderMenu = (
