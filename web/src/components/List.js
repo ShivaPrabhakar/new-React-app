@@ -23,7 +23,7 @@ const config = {
     nothing:{
       marginTop:20
     }
-  }));
+  })); 
 const  ListUI =   React.memo(function ListUI(props)  {
   const classes = useStyles;
   const [contacts,setContacts] = useState([]);
