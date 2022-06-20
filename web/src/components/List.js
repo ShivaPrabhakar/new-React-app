@@ -24,32 +24,60 @@ const config = {
       marginTop:20
     }
   }));
-
 const  ListUI =   React.memo(function ListUI(props)  {
   const classes = useStyles;
   const [contacts,setContacts] = useState([]);
   const [chats,setChats] = useState([]);
- 
+  var list;
   let showContacts = props.showContacts;
   let showChats = props.showChats;
   console.log(showContacts, showChats);
-  // useEffect(() => {
-  //   function handleContacts(contacts) {
-  //     setContacts(contacts)
-  //   }
-  //   function handleChats(contacts) {
-  //     setContacts(contacts)
-  //   }
-  // })
+  useEffect(() => {
+   
+      if(props.showContacts) {
+         getContacts();
+      }
+    
+  }, []);
+  useEffect(() => {
+  
+      if(props.showChats) {
+         getChats();
+      }
+    
+  }, []);
 
-  const getChats =  async ()=>{  return setChats([{name : 'shiva'},{ name:'prabhakar'}]);};
+  useEffect(() => {
+    
+      if(props.showContacts) {
+         getContacts();
+      }
+    
+  }, [props.showContacts]);
+  useEffect(() => {
+    
+      if(props.showChats) {
+         getChats();
+      }
+    
+  }, [props.showChats]);
+
+  const getChats =  async ()=>{
+    if(props.showChats){
+      setChats([{name : 'shiva'},{ name:'prabhakar'}]);
+      // return listRendering(chats)
+    }
+    //  callback(null, chats)
+};
 
   const getContacts =  async()=>{
-    if(showContacts) {
+    if(props.showContacts) {
         let res = await axios.get('/get/friends',config)
         console.log("res data = ",Array.isArray(res.data.contacts));
           setContacts(res.data.contacts);
-          console.log("assigning to var");
+          // return listRendering(contacts)
+          // console.log("assigning to var",callback);
+          // callback(null, res.data.contacts)
     }
   }
 
@@ -63,20 +91,30 @@ const  ListUI =   React.memo(function ListUI(props)  {
     console.log("ssssss === ",props);
     const setList = () =>{
       if(props.showContacts === true){
-          getContacts();
-          console.log("got var"); 
-          console.log("res cont ",contacts); 
-          listRendering(contacts);
+      //     getContacts();
+      //     console.log("got var"); 
+      //     return (
+           
+              return listRendering({list: contacts, isContacts: true})
+           
+      //     );
       }
       else {
-        getChats();
-        listRendering(chats);
+      //   getChats();
+      //   console.log("getChats");
+      //   return (
+         
+           return listRendering({list: chats, isContacts: false})
+      //   )
       }
     }
 
 
-    function listRendering (list) {
+    function listRendering (args) {
+      let {list, isContacts} = args;
+      console.log("list",list);
       if(list.length>0){
+        console.log("in creating list");
         return (
           <React.Fragment>
               <List>      
@@ -90,26 +128,39 @@ const  ListUI =   React.memo(function ListUI(props)  {
               ))}
             </List>
             </React.Fragment>
-            );
-      }
-      else{
-        return( 
-          <React.Fragment>  
-            <List>     
-                {list.map((obj, index) => (
-                    <React.Fragment>
-                        <ListItem button divider="true" classes={classes.listbutton1} key={obj.name} >
-                            <ListItemText primary={obj.name} />
-                        </ListItem>
-                    </React.Fragment>
-                ))}
-            </List>
-            </React.Fragment>
         );
+      } else{
+          if(isContacts) {
+            return( 
+              <React.Fragment>  
+                <List>     
+                    {/* {list.map((obj, index) => ( */}
+                        {/* <React.Fragment> */}
+                            <ListItem button divider="true" classes={classes.listbutton1} key={"1"} >
+                                <ListItemText primary={"Add contacts to show"} />
+                            </ListItem>
+                        
+                        {/* </React.Fragment> */}
+                    {/* ))} */}
+                </List>
+              </React.Fragment>
+            )
+          }  else {
+            return( 
+              <React.Fragment>  
+                <List>  
+                  <ListItem button divider="true" classes={classes.listbutton1} key={"1"} >
+                        <ListItemText primary={"Chat with your friends!"} />
+                    </ListItem>
+                </List>
+              </React.Fragment>
+            )
+          }
+        
       }
     }
 
-  setList();
+  return setList();
   
 
   

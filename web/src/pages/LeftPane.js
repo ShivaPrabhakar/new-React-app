@@ -154,5 +154,4 @@ const  LeftPane =  React.memo(function LeftPane(props) {
 //  //  showChats = state.toggleVal.showChats;
 // }
 
-// export default connect(mapStateToProps,{setContacts,setChats,getToggleVal})(LeftPane);
 export default LeftPane;

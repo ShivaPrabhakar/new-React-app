@@ -5,7 +5,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import QuestionAnswerRoundedIcon from '@material-ui/icons/QuestionAnswerRounded';
 import RecentActorsRoundedIcon from '@material-ui/icons/RecentActorsRounded';
-import ListUI from './List';
+// import ListUI from './List';
 // import axios from 'axios'; 
 import {connect} from 'react-redux';
 import {setContacts,setChats} from '../actions/Toggle';
