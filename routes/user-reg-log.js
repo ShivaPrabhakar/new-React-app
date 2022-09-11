@@ -182,7 +182,7 @@ module.exports = (app) => {
 
        if(req.cookie !== undefined  ){
 
-           if(req.cookie.w_auth !== '')
+           if(req.cookie.w_auth !== '' || req.cookie.w_auth !== undefined)
 
                 res.redirect('/chat');
 
@@ -190,7 +190,7 @@ module.exports = (app) => {
 
        if(req.cookie !== undefined ){
 
-           if(req.cookie.w_authExp !== '')
+           if(req.cookie.w_authExp !== ''  || req.cookie.w_auth !== undefined)
 
                 res.redirect('/chat');
 
@@ -202,7 +202,11 @@ module.exports = (app) => {
 
             // console.log(req.body.logpasswor,"111d");
 
-            if(err) throw err;
+            if(err) {
+                let msg = 'Password doesn\'t match.';
+                console.error("msg :",msg);
+                return res.status(401).json({Login: false, message:msg});
+            }
 
             if(data !== "error" && data.Login ){
 
@@ -299,18 +303,26 @@ module.exports = (app) => {
     });
 
     app.get('/search',async (req,res) => {
-        console.log(req._parsedOriginalUrl.query.split('=')[1]);
-        let searchText = '^'+req._parsedOriginalUrl.query.split('=')[1];
-        console.log("searchText ::",searchText);
-        let searchResult = await userSearch(searchText);
-        if(searchResult.length > 0 ){
-            res.status(200)
-            res.send(searchResult);
-        }
-        else{ 
+        console.log(req._parsedOriginalUrl);
+        if(req._parsedOriginalUrl.query && req._parsedOriginalUrl.query.length>0){
+            let searchText = '^'+req._parsedOriginalUrl.query.split('=')[1];
+            console.log("searchText ::",searchText);
+            let searchResult = await userSearch(searchText);
+            if(searchResult.length > 0 ){
+                res.status(200)
+                res.send({success: true, users: searchResult});
+            }
+            else{ 
+                res.status(400);
+                res.send("No user found");
+            }
+        } else {
             res.status(400);
-            res.send("No user found");
+            res.send({
+                msg: "Invalid request."
+            });
         }
+        
     })
 
 }

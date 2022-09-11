@@ -2,7 +2,7 @@ const User = require("../models/user_model");
 const url = require('url');
 const querystring = require('querystring');
 const {getChats,getOrCreateChat,rejectChatReq,acceptChatReq} = require('../services/chat');
-const {getContacts} = require('../services/user');
+const {getContacts, addAsFriend} = require('../services/user');
 module.exports = (app) => {
 
 
@@ -10,6 +10,7 @@ module.exports = (app) => {
 
     app.get('/get/friends',async (req,res)=>{
         var token =  req.cookies.w_authExp;
+        console.log("token :",req.cookies);
         let contacts = await getContacts(token,0,10);
         res.send({contacts:contacts});
     })
@@ -60,6 +61,34 @@ module.exports = (app) => {
         else{
             res.send({accept:false});
         }
+    })
+
+    app.post('/add/friend', async (req, res) => {
+        let user = req.body._user;
+        let friendId = req.body._user;
+        let cookies = req.headers.cookie.split(';');
+        let token = "x";
+        for(let c of cookies) {
+            if(c.includes('w_authExp') > 0) {
+
+                token = c.split('=')[1].split(";")[0];
+                console.log("c :",c);
+            }
+        }
+
+        console.log("cookies :",token);
+        try {
+            const s = await addAsFriend.$promisify({friendId: user, token})
+            if(s){
+                res.send({success:true});
+            } else{
+                res.send({success:false});
+            }
+        } catch (error) {
+            res.send({success: false});
+        }
+        
+        
     })
 
 }

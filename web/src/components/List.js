@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -8,8 +7,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import axios from 'axios';
-// import {connect} from 'react-redux';
-// import {setContacts,setChats,getToggleVal} from '../actions/Toggle';
 const config = {
     headers:{
       "Content-Type":"application/json"
@@ -28,10 +25,27 @@ const  ListUI =   React.memo(function ListUI(props)  {
   const classes = useStyles;
   const [contacts,setContacts] = useState([]);
   const [chats,setChats] = useState([]);
-  var list;
   let showContacts = props.showContacts;
   let showChats = props.showChats;
   console.log(showContacts, showChats);
+  const getContacts =  async()=>{
+    if(props.showContacts) {
+        let res = await axios.get('/get/friends',config)
+        console.log("res data = ",Array.isArray(res.data.contacts));
+          setContacts(res.data.contacts);
+          // return listRendering(contacts)
+          // console.log("assigning to var",callback);
+          // callback(null, res.data.contacts)
+    }
+  }
+
+  const getChats =  async ()=>{
+    if(props.showChats){
+      setChats([{name : 'shiva'},{ name:'prabhakar'}]);
+      // return listRendering(chats)
+    }
+    //  callback(null, chats)
+};
   useEffect(() => {
    
       if(props.showContacts) {
@@ -62,24 +76,9 @@ const  ListUI =   React.memo(function ListUI(props)  {
     
   }, [props.showChats]);
 
-  const getChats =  async ()=>{
-    if(props.showChats){
-      setChats([{name : 'shiva'},{ name:'prabhakar'}]);
-      // return listRendering(chats)
-    }
-    //  callback(null, chats)
-};
+  
 
-  const getContacts =  async()=>{
-    if(props.showContacts) {
-        let res = await axios.get('/get/friends',config)
-        console.log("res data = ",Array.isArray(res.data.contacts));
-          setContacts(res.data.contacts);
-          // return listRendering(contacts)
-          // console.log("assigning to var",callback);
-          // callback(null, res.data.contacts)
-    }
-  }
+  
 
   // useEffect(() => {
   //     getContacts();

@@ -122,7 +122,10 @@ UserSchema.set('toObject', { virtuals: true });
 // });
 UserSchema.static({
     comparePassword : function(plainPassword, user, callback){  
+        console.log("plainPassword :",plainPassword," user :",user);
         bcrypt.compare(plainPassword, user.password, function(err, isMatch){
+            console.error("error :",err);
+            console.log("isMatch :",isMatch);
             if(err) throw err;
             if(isMatch){
               var id = user._id;
@@ -131,13 +134,13 @@ UserSchema.static({
                 callback(err,data);
               });
             }else{
-              callback(err,"error");
+              callback("error", null);
             }
         });
     },
     
     getUserById : function(id,callback){
-      User.findById(id,callback);
+      User.findOne({_id: id, deleted: false}).exec(callback);
     },
     
     
@@ -177,6 +180,7 @@ UserSchema.static({
       })
     },
   getFriends : async(token,pno,psize) => {
+      console.log("token :",token);
       let user = await User.findOne({ token: token });
       let friends = [];
       if( user.friends) {
