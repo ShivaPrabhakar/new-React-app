@@ -1,14 +1,21 @@
-import React from "react";
+import React, { useMemo, useState} from "react";
 
 import { fade, makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import clsx from 'clsx';
 import Button from '@material-ui/core/Button';
+import List from '@material-ui/core/List';
 import axios from 'axios';
 import Cookies from 'universal-cookie';
 import ListRendering from './ListRendering';
 import constants from '../constants';
 import Menu from '@material-ui/core/Menu';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import MailIcon from '@material-ui/icons/Mail';
+import Popup from './Popup';
 
 const cookies = new Cookies();
 const token = cookies.get('w_authExp');
@@ -93,10 +100,58 @@ closeIcon: {
   textAlign: "center",
   border: "1px solid #999",
   fontSize: "20px",
+},
+
+suggestionItem: {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center"
+},
+
+arrowImage: {
+  height: "14px",
+  cursor: "pointer"
+},
+
+
+suggestionName: {
+  fontSize: "10px",
+  fontFamily: 'roboto',
+  color: "#64748b"
+},
+
+googleSuggestionsContainer: {
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  alignItems: "center",
+  minHeight: "100vh",
+},
+
+suggestionContainer: {
+  width: "80%",
+  maxWidth: "200px",
+  borderRadius: "10px",
+  boxShadow: "0px 4px 16px 0px #bfbfbf",
+  paddingLeft: "18px",
+  paddingRight: "18px",
+  paddingTop: "24px",
+  paddingBottom: "8px",
+},
+
+inputContainer: {
+  display: "flex"
+},
+
+suggestionsList: {
+  paddingLeft: "0px"
 }
+
+
+
 }))
 const UserSearchPop = (props) => {
-  const classes = useStyles;
+  const classes = useStyles();
   const [modalStyle] = React.useState(getModalStyle);
   const [buttonStyle] = React.useState(getButtonStyle);
   const [token] = React.useState({
@@ -104,9 +159,33 @@ const UserSearchPop = (props) => {
   })
   const menuId = 'primary-search-account-menu';
   const [anchorEl, setAnchorEl] = React.useState(0);
+  const [obj, setObj] = React.useState(props.searchUsers.length > 0 ? {} : 0);
+  const [isObj, setIsObj] = React.useState(false);
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  const handlePopup = () => {
+    // console.log(event);
+    // let k = useMemo(event);
+    if(props.searchUsers.length > 0) {
+      console.log("in setting ",props.searchUsers.length,(props.searchUsers.length > 0));
+      // setObj(event);
+    }
+    if(obj && (obj._id !== null || obj._id !== undefined)) {
+      console.log("in returning popup");
+        return (<Popup
+          name={obj.name}
+          id={obj._id}
+          type={type}
+          handleClose={togglePopup}
+          open={isOpen}
+        />)
+    } else {
+      return () => {}
+    }
+    // return () => {openPopup(event)};
+  }
   const isMenuOpen = Boolean(anchorEl);
 //   const txt = "Do you what to add " + props.name + " as friend?";
   const addAsFriend = async () => {
@@ -123,23 +202,62 @@ const UserSearchPop = (props) => {
     }
     props.handleClose();
   }
+  const list = props.searchUsers;
+  const type = constants.LIST_TYPES.USERS;
+  const [isOpen, setIsOpen] = useState(true);
+ 
+  const togglePopup = () => {
+    setIsOpen(!isOpen);
+  }
+
+  const openPopup = () => {
+    
+    // return () => {?
+      console.log("obj ::",obj,type,isOpen);
+      
+      return (<Popup
+              name={obj.name}
+              id={obj._id}
+              type={type}
+              handleClose={togglePopup}
+              open={isOpen}
+            />)
+        
+      
+    //}
+  }
   console.log("list :",props.searchUsers);
   return (
-    <Menu
-    anchorEl={anchorEl}
-    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-    id={menuId}
-    keepMounted
-    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-    open={isMenuOpen}
-    onClose={handleMenuClose}
-  >
-    
-        <ListRendering list={props.searchUsers} type={constants.LIST_TYPES.USERS}/>
-    
-  </Menu>
-   
-  );
+    <div className={clsx([classes.googleSuggestionsContainer])}>
+     
+      <div className={clsx([classes.suggestionContainer])}>
+        <div className={clsx([classes.inputContainer])}>
+          
+        </div>
+        <ul className={clsx([classes.suggestionsList])}>
+          {list.map(each => (
+            <li className={clsx([classes.suggestionItem])} id={each._id} onClick={() => { setIsObj(true); setObj(each); handlePopup()}}>
+              <p className={clsx([classes.suggestionName])}>{each.name}</p>
+              <img
+                className="arrow-image"
+                src={each.img}
+              />
+            </li>
+            
+          ))}
+        </ul>
+      </div>
+      {isObj && <Popup
+              name={obj.name}
+              id={obj._id}
+              type={type}
+              handleClose={togglePopup}
+              open={isOpen}
+            />
+
+      }
+    </div>
+  )
 };
  
 export default UserSearchPop;
