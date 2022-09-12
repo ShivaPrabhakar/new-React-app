@@ -16,6 +16,7 @@ import IconLabelTabs from '../components/TabBar';
 // import {connect} from 'react-redux';
 import ListUI from '../components/List';
 import UserSearchPop from '../components/UserSearchPop';
+import clsx from 'clsx';
 import {setContacts,setChats,getToggleVal} from '../actions/Toggle';
 const config = {
     headers:{
@@ -27,7 +28,9 @@ const drawerWidth = 340;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
+    display: "flex",
+    flexGrow: 1,
+    margin: theme.spacing(0)
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -49,6 +52,11 @@ const useStyles = makeStyles((theme) => ({
   listbutton1: {
       height:50,
   },
+  margin:{
+    margin: theme.spacing(0),
+  zIndex: theme.zIndex.drawer + 1,
+
+},
 }));
 
 
@@ -63,6 +71,7 @@ const  LeftPane =  React.memo(function LeftPane(props) {
 
   const [search, setSearch] = React.useState(false);
   const [chatScreen, setChatScreen] = React.useState(false);
+  const [searchUsers, setSearchUsers] = React.useState([]);
 
   const [contacts,setContacts] = React.useState({
     contacts:false,
@@ -74,10 +83,14 @@ const  LeftPane =  React.memo(function LeftPane(props) {
     chats:false
   });
 
+  const settingSearcUsers = (users) => {
+    setSearchUsers(users);
+  }
   const onSetContacts = async (event)=> {
     event.preventDefault();
     setContacts(true);
     setChats(false);
+    onSearch(false);
     console.log(chats, contacts);
   };
 
@@ -85,22 +98,59 @@ const  LeftPane =  React.memo(function LeftPane(props) {
     event.preventDefault();
     setChats(true);
     setContacts(false);
+    onSearch(false);
     console.log(chats, contacts);
   };
  
-  const onSearch = (v) => {
+  const onSearch = (v, searchResults) => {
     // event.preventDefault();
-    setSearch(v);
+    setChatScreen(false);
+    if(v && searchResults && searchResults.length > 0) {
+      console.log("");
+      settingSearcUsers(searchResults);
+    }
+    console.log(search)
+    setTimeout(() => {
+      setSearch(v);
+    }, 10);
+   
+    
   }
 
   const onChatScreen = (v) => {
     // event.preventDefault();
+    onSearch(false);
     setChatScreen(v);
+  }
+
+  const renderSearchUsersList = (args) => {
+    console.log("searchUsers in leftpane:",searchUsers,searchUsers.length);
+    return(
+          
+      <React.Fragment>
+        {searchUsers.length > 0 && (
+                <div className={clsx([ classes.user,classes.root])}>
+                    <UserSearchPop searchUsers={searchUsers}/>
+                </div>
+            )
+          }
+      </React.Fragment>
+  
+    )
   }
 
   const renderMain = (args) => {
     if(search) {
-        
+      return(
+        <React.Fragment>
+          {searchUsers.length > 0 && (
+                  <div className={clsx([ classes.user,classes.root])}>
+                      <UserSearchPop searchUsers={searchUsers}/>
+                  </div>
+              )
+            }
+        </React.Fragment>
+      )
     } else if(chatScreen) {
 
     } else {
@@ -155,7 +205,7 @@ const  LeftPane =  React.memo(function LeftPane(props) {
       >
         <Toolbar />
         <div className={classes.drawerContainer}>
-        <IconLabelTabs onSetContacts={onSetContacts} onSetChats={onSetChats}/>
+        <IconLabelTabs onSetContacts={onSetContacts} onSetChats={onSetChats} isChatScreen={onChatScreen}/>
             <React.Fragment>
                 <ListUI showContacts={contacts} showChats={chats} />
 

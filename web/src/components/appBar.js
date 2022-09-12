@@ -143,7 +143,7 @@ export default function ButtonAppBar(props) {
 
 React.useEffect(() => {
   console.log("on schange list");
-  renderSearchUsersList();
+  // renderSearchUsersList();
 }, [searchUsers]);
 
 
@@ -180,6 +180,8 @@ let searchText = searchRes.searchRes;
   console.log("res in appbar :",res);
   if(res.data.users && res.data.users.length > 0) {
     setSearchUsers(res.data.users);
+    console.log("props :",props);
+    props.isSearch(true, res.data.users);
   }
 }
 
@@ -199,14 +201,15 @@ const renderMenu = (
   </Menu>
 );
 
-const renderSearchUsersList = () => {
-  console.log("in renderSearchUsersList",searchUsers);
-  if(searchUsers.length > 0) {
-    return (
-      <UserSearchPop searchUsers={searchUsers}/>
-    )
-  }
-}
+// const renderSearchUsersList = () => {
+//   console.log("in renderSearchUsersList",searchUsers);
+//   props.isSearch(true, searchUsers)
+//   if(searchUsers.length > 0) {
+//     return (
+//       <UserSearchPop searchUsers={searchUsers}/>
+//     )
+//   }
+// }
 
 const renderSearch = (
   <div className={classes.search}>
@@ -272,14 +275,7 @@ const renderSearch = (
             </Toolbar>
           </AppBar>
           {renderMenu}
-          {searchUsers.length > 0 && (
-                <div className={clsx([ classes.user,classes.root])}>
-                    <UserSearchPop searchUsers={searchUsers}/>
-                </div>
-            )
-          }
         </div>
-        
       </React.Fragment>
     );
   }

@@ -99,7 +99,9 @@ const Popup = (props) => {
   const [token] = React.useState({
     token: cookies.get('w_authExp')
   })
+
   const txt = "Do you what to add " + props.name + " as friend?";
+  console.log("txt ::",txt,props);
   const addAsFriend = async () => {
     const id = props.id;
     try {
@@ -137,6 +139,7 @@ const Popup = (props) => {
     </Modal>
    
   );
+  
 };
  
 export default Popup;

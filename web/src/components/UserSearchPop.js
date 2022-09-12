@@ -115,21 +115,23 @@ arrowImage: {
 
 
 suggestionName: {
-  fontSize: "10px",
+  fontSize: "20px",
   fontFamily: 'roboto',
   color: "#64748b"
 },
 
 googleSuggestionsContainer: {
+  width: "100%",
   display: "flex",
   flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  minHeight: "100vh",
+  justifyContent: "left",
+  alignItems: "left",
+  height: "60vh",
+  // float: "right",
 },
 
 suggestionContainer: {
-  width: "80%",
+  width: "100%",
   maxWidth: "200px",
   borderRadius: "10px",
   boxShadow: "0px 4px 16px 0px #bfbfbf",
@@ -161,13 +163,22 @@ const UserSearchPop = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(0);
   const [obj, setObj] = React.useState(props.searchUsers.length > 0 ? {} : 0);
   const [isObj, setIsObj] = React.useState(false);
+  const list = props.searchUsers;
+  const type = constants.LIST_TYPES.USERS;
+  const [isOpen, setIsOpen] = useState(true);
+ 
+  const togglePopup = () => {
+    setIsOpen(!isOpen);
+  }
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
   const handlePopup = () => {
-    // console.log(event);
+    setIsOpen(true)
+    console.log("isOpen ::",isOpen);
     // let k = useMemo(event);
+
     if(props.searchUsers.length > 0) {
       console.log("in setting ",props.searchUsers.length,(props.searchUsers.length > 0));
       // setObj(event);
@@ -202,13 +213,7 @@ const UserSearchPop = (props) => {
     }
     props.handleClose();
   }
-  const list = props.searchUsers;
-  const type = constants.LIST_TYPES.USERS;
-  const [isOpen, setIsOpen] = useState(true);
  
-  const togglePopup = () => {
-    setIsOpen(!isOpen);
-  }
 
   const openPopup = () => {
     
