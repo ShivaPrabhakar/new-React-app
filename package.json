@@ -33,7 +33,7 @@
     "mongodb": "*",
     "mongoose": "^5.9.2",
     "mongoose-unique-validator": "*",
-    "nodemon": "^2.0.4",
+    "nodemon": "^2.0.20",
     "passport": "^0.4.1",
     "passport-google-oauth2": "^0.2.0",
     "passport-google-oauth20": "^2.0.0",
