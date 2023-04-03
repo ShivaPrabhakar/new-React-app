@@ -6,20 +6,29 @@ mongoose.set('useCreateIndex', true);
 
 
 const chatSchema = new mongoose.Schema({
+    // room_id: {
+
+    //     required: true,
+    // },
+    name: {
+        type: String,
+        default: "",
+    },
     users: {
         type: [ mongoose.Schema.Types.ObjectId],
+        ref: "User",
         required: true,
         default: []
     },
-    requested_by:  mongoose.Schema.Types.ObjectId,
-    accepted: {
+    // requested_by:  mongoose.Schema.Types.ObjectId,
+    block: {
         type: Boolean,
         default: false,
     },
-    rejected: {
-        type: Boolean,
-        default: false,
-    },
+    // rejected: {
+    //     type: Boolean,
+    //     default: false,
+    // },
     created_on: {
         type: Date,
         default: Date.now,

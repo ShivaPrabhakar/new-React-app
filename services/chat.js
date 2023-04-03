@@ -2,62 +2,48 @@ const Chat = require('../models/chat_model')
 const User = require('../models/user_model');
 
 async function getOrCreateChat(user1,user2){
-    
-        const chats = await Chat.find({ users: { $all: [user1,user2] } });
-        if (chats === null || chats.length == 0) {
-            // creating new chat id
-
-            const newChat = Chat({
-                users: [user1, user2],
-                requested_by: user1
-            });
-
-            await newChat.save();
-        let user = await User.find({_id:{$in : [user1,user2] }});
-        console.log("user == ",user);
-            user[0].chats.push(newChat._id);
-            user[1].chats.push(newChat._id);
-        for(let u in user){
-            let u1 = await User.findOneAndUpdate({_id:u.Id},{chats:u.chats},{new:true});
+    try {
+        let users = await User.find({_id:{$in : [user1,user2] }});
+        let user;
+        
+        if(users[0].oneOneChats.indexOf(users[1]._id) < 0) {
+            users[0].oneOneChats.push(users[1]._id);
+            let u = users[0]
+            let u1 = await User.findOneAndUpdate({_id:u._id},{oneOneChats:u.oneOneChats},{new:true});
+            if(users[0]._id.toString() === user1) {
+                user = u1;
+            }
             console.log(u1);
         }
-            console.log(newChat);
-            return  newChat
-            
-        } else {
-            console.log(chats[0]);
-            return  chats[0];
-        }
+        if(users[1].oneOneChats.indexOf(users[0]._id) < 0) {
+            users[1].oneOneChats.push(users[2]._id);
+            let u = users[1]
+            let u1 = await User.findOneAndUpdate({_id:u._id},{oneOneChats:u.oneOneChats},{new:true});
+            if(users[1]._id.toString() === user1) {
+                user = u1;
+            }
+            console.log(u1);
+        } 
+        return user;
+    } catch (error) {
+        console.error("error while fetching users in getOrCreateChat",error);
+        throw error;
+    } 
+    
+
     
 }
 
 async function getChats(userId){
-    const user = await User.find({_id:userId});
-    console.log("user = ",user);
-
-    const chats = await Chat.find({_id:{$in:user.chats}});
-    console.log("chats = ",chats);
-    let user_ids = new Array();
-
-    for (var c in chats) {
-        user_ids.push(chats[c].users[0]);
-        user_ids.push(chats[c].users[1]);
+    try {
+        const user = await User.find({_id:userId});
+        console.log("user = ",user);
+        return user.oneOneChats;
+    } catch (error) {
+        console.error("error while fetching user",error);
+        throw error;
     }
-    const avatars = await User.find({_id:{$in:user_ids}},{_id:1,image:1,name:1});
-    console.log("avatars = ",avatars," ")
-
 }
 
-async function acceptChatReq(chatId){
-    const chat = await Chat.findById(chatId);
-    chat.accepted = true;
-    return await chat.save();
-}
 
-async function rejectChatReq(chatId){
-    const chat = await Chat.findById(chatId);
-    chat.rejected = true;
-    return await chat.save();
-}
-
-module.exports = {getChats,getOrCreateChat,acceptChatReq,rejectChatReq};
+module.exports = {getChats,getOrCreateChat};

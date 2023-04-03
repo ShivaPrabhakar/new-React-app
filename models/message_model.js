@@ -1,10 +1,21 @@
 const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
-    room_id: mongoose.Schema.Types.ObjectId,
-    author_id: mongoose.Schema.Types.ObjectId,
-    author_name: String,
-    message: String,
+    _user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
+    _target: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
+    // author_name: String,
+    message: {
+        type: String,
+        required: true,
+    },
     time: {
         type: Date,
         default: Date.now
