@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { fade,makeStyles } from '@material-ui/core/styles';
+import { fade,makeStyles,createMuiTheme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -10,7 +10,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
-import ListUI from '../components/List';
+// import createTheme from '@material-ui/core'
 import axios from 'axios'
 
 import clsx from 'clsx';
@@ -18,8 +18,10 @@ import Cookies from 'universal-cookie';
  import { useHistory } from 'react-router-dom';
 // import { Redirect } from 'react-router'
 
+import ListRendering from './ListRendering'
+import constants from '../constants';
+import UserSearchPop from './UserSearchPop';
 const cookies = new Cookies();
-
 
 
 const useStyles = makeStyles((theme) => ({
@@ -53,6 +55,24 @@ const useStyles = makeStyles((theme) => ({
   inputRoot: {
     color: 'inherit',
     
+  },
+  user: {
+    position: 'relative',
+
+    flexGrow: 1,
+    marginLeft: theme.spacing(1000),
+    zIndex: theme.zIndex.drawer + 1,
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: fade(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: fade(theme.palette.common.white, 0.25),
+    },
+    width:'40%',
+    [theme.breakpoints.up('sm')]: {
+      marginTop: theme.spacing(10),
+      marginLeft: theme.spacing(90),
+      width: '30%',
+    },
   },
   inputInput: {
     padding: theme.spacing(1, 1, 1, 0),
@@ -96,14 +116,15 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ButtonAppBar() {
+export default function ButtonAppBar(props) {
   // 
  let history = useHistory();
 
 
  const classes = useStyles();
- const [anchorEl, setAnchorEl] = React.useState(null);
- const [searchRes,setSearchResult] = React.useState(null);
+ const [anchorEl, setAnchorEl] = React.useState(0);
+ const [searchRes,setSearchResult] = React.useState(0);
+ const [searchUsers, setSearchUsers] = React.useState([]);
 
 
 
@@ -120,6 +141,10 @@ export default function ButtonAppBar() {
   setAnchorEl(null);
 };
 
+React.useEffect(() => {
+  console.log("on schange list");
+  // renderSearchUsersList();
+}, [searchUsers]);
 
 
  const menuId = 'primary-search-account-menu';
@@ -148,8 +173,16 @@ const logoutFun = async () =>{
 
 }
 
-const onChange = (e) => {setSearchResult({...searchRes, searchRes:e.target.value.trim()})
-  let res = axios.get('/search',)
+const onChange = async(e) => {setSearchResult({...searchRes, searchRes:e.target.value.trim()})
+console.log(searchRes);
+let searchText = searchRes.searchRes;
+  let res = await axios.get('/search',{params:{searchText}});
+  console.log("res in appbar :",res);
+  if(res.data.users && res.data.users.length > 0) {
+    setSearchUsers(res.data.users);
+    console.log("props :",props);
+    props.isSearch(true, res.data.users);
+  }
 }
 
 const renderMenu = (
@@ -168,6 +201,16 @@ const renderMenu = (
   </Menu>
 );
 
+// const renderSearchUsersList = () => {
+//   console.log("in renderSearchUsersList",searchUsers);
+//   props.isSearch(true, searchUsers)
+//   if(searchUsers.length > 0) {
+//     return (
+//       <UserSearchPop searchUsers={searchUsers}/>
+//     )
+//   }
+// }
+
 const renderSearch = (
   <div className={classes.search}>
   <div className={classes.searchIcon}>
@@ -182,8 +225,11 @@ const renderSearch = (
     inputProps={{ 'aria-label': 'search' }}
     onChange = {onChange}
   />
+   
 </div>
 );
+
+
 
  const setBth = () =>{
   if(token.token === "" || token.token === undefined ){
@@ -205,30 +251,32 @@ const renderSearch = (
   }
   else{
     return(
-      <div className={clsx([classes.root,classes.margin])}>
-        <AppBar className={classes.margin} position="fixed">
-          <Toolbar>
-              <Typography variant="h6" className={classes.title}>
-              <Button size={"large"} disableRipple disableFocusRipple disableElevation href={'/home'} color="inherit"><strong className={classes.chatbtn} >ChatApp</strong></Button>
-              </Typography>
-              {renderSearch}
-              <div className={classes.sectionDesktop}>
-                  <IconButton
-                    edge="end"
-                    aria-label="account of current user"
-                    aria-controls={menuId}
-                    aria-haspopup="true"
-                    onClick={handleProfileMenuOpen}
-                    color="inherit"
-                  >
-                    <AccountCircle />
-                  </IconButton>
-              </div>
-          
-          </Toolbar>
-        </AppBar>
-        {renderMenu}
-      </div>
+      <React.Fragment>
+        <div className={clsx([classes.root,classes.margin])}>
+          <AppBar className={classes.margin} position="fixed">
+            <Toolbar>
+                <Typography variant="h6" className={classes.title}>
+                <Button size={"large"} disableRipple disableFocusRipple disableElevation href={'/home'} color="inherit"><strong className={classes.chatbtn} >ChatApp</strong></Button>
+                </Typography>
+                {renderSearch}
+                <div className={classes.sectionDesktop}>
+                    <IconButton
+                      edge="end"
+                      aria-label="account of current user"
+                      aria-controls={menuId}
+                      aria-haspopup="true"
+                      onClick={handleProfileMenuOpen}
+                      color="inherit"
+                    >
+                      <AccountCircle />
+                    </IconButton>
+                </div>
+            
+            </Toolbar>
+          </AppBar>
+          {renderMenu}
+        </div>
+      </React.Fragment>
     );
   }
  }

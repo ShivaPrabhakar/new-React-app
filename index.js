@@ -150,7 +150,7 @@ app.set('port',3030);
 
 // console.log(os.totalmem());
 
-
+require('./utils');
 
 require('./routes/index')(app);
 

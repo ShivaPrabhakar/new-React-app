@@ -5,6 +5,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import QuestionAnswerRoundedIcon from '@material-ui/icons/QuestionAnswerRounded';
 import RecentActorsRoundedIcon from '@material-ui/icons/RecentActorsRounded';
+// import ListUI from './List';
 // import axios from 'axios'; 
 import {connect} from 'react-redux';
 import {setContacts,setChats} from '../actions/Toggle';
@@ -24,46 +25,54 @@ const useStyles = makeStyles({
 
  function IconLabelTabs(props) {
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
+  // const [value, setValue] = React.useState(0);
 
-  // const [contacts,SetContacts] = React.useState({
+  // const [contacts,setContacts] = React.useState({
+  //   contacts:true,
+  //   chats:false
+  // });
+
+  // const [chats,setChats] = React.useState({
   //   contacts:false,
+  //   chats:true
   // });
 
-  // const [chats,SetChats] = React.useState({
-  //   // contacts:false,
-  //   chat:false
-  // });
+  // const onSetContacts = async (event)=> {
+  //   event.preventDefault();
+  //   setContacts(true);
+  //   setChats(false);
+  //   console.log(chats, contacts);
+  // };
 
-  const onSetContacts = async ()=> {
-    props.setContacts(true,false);
-    
-  };
+  // const onSetChats = async (event)=> {
+  //   event.preventDefault();
+  //   setChats(true);
+  //   setContacts(false);
+  //   console.log(chats, contacts);
+  //   <ListUI showContacts={contacts} />;
+  // };
 
-  const onSetChats = async ()=> {
-    props.setChats(false,true);
-  };
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+  // const handleChange = (event, newValue) => {
+  //   setValue(newValue);
+  // };
 
   return (
     <Paper square className={classes.root}>
       <Tabs
-        value={value}
-        onChange={handleChange}
+        // value={value}
+        // onChange={handleChange}
         variant="fullWidth"
         indicatorColor="secondary"
         textColor="secondary"
         aria-label="icon label tabs example"
       >
-        <Tab icon={<QuestionAnswerRoundedIcon />} label="CHATS" onClick={()=>onSetChats()}/>
-        <Tab icon={<RecentActorsRoundedIcon />} label="CONTACTS" onClick={()=>onSetContacts()}/>
+        <Tab icon={<QuestionAnswerRoundedIcon />} label="CHATS" onClick={props.onSetChats}/>
+        <Tab icon={<RecentActorsRoundedIcon />} label="CONTACTS" onClick={props.onSetContacts}/>
       </Tabs>
     </Paper>
   );
 }
 
 
-export default connect(null,{setContacts,setChats})(IconLabelTabs);
+// export default connect(null,{setContacts,setChats})(IconLabelTabs);
+export default IconLabelTabs;

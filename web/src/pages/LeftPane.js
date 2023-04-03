@@ -13,8 +13,10 @@ import Typography from '@material-ui/core/Typography';
 import ButtonAppBar from './../components/appBar';
 import IconLabelTabs from '../components/TabBar';
 // import axios from 'axios';
-import {connect} from 'react-redux';
+// import {connect} from 'react-redux';
 import ListUI from '../components/List';
+import UserSearchPop from '../components/UserSearchPop';
+import clsx from 'clsx';
 import {setContacts,setChats,getToggleVal} from '../actions/Toggle';
 const config = {
     headers:{
@@ -26,7 +28,9 @@ const drawerWidth = 340;
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
+    display: "flex",
+    flexGrow: 1,
+    margin: theme.spacing(0)
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
@@ -48,6 +52,11 @@ const useStyles = makeStyles((theme) => ({
   listbutton1: {
       height:50,
   },
+  margin:{
+    margin: theme.spacing(0),
+  zIndex: theme.zIndex.drawer + 1,
+
+},
 }));
 
 
@@ -55,75 +64,100 @@ var showContacts;
 var showChats;
 
 
- function LeftPane(props) {
+const  LeftPane =  React.memo(function LeftPane(props) {
   const classes = useStyles();
   
-  // const componentWillMount = () =>{
-  //   props.getToggleVal();
-  // }
-  // componentWillMount();
-  // props.showContacts = showContacts;
-  // props.showChats = showChats;
   
-  // const ListUI = async()=> {
-     
-  //     let list;
-  //     console.log("ssssss === ",showContacts,showChats);
-  //   if(props.showContacts)
-  //     list = await getContacts();
-  //   else
-  //     list = await getChats();
-  //   console.log("list  == ",list);
-  //     return (
-  //       <List>
-  //       {list.map((text, index) => (
-  //           <React.Fragment>
-  //         <ListItem button divider="true" classes={classes.listbutton1} key={text} >
-  //           <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-  //           <ListItemText primary={text} />
-  //         </ListItem>
-  //         </React.Fragment>
-  //       ))}
-  //     </List>
-  //     );
+
+  const [search, setSearch] = React.useState(false);
+  const [chatScreen, setChatScreen] = React.useState(false);
+  const [searchUsers, setSearchUsers] = React.useState([]);
+
+  const [contacts,setContacts] = React.useState({
+    contacts:false,
+    chats:true
+  });
+
+  const [chats,setChats] = React.useState({
+    contacts:true,
+    chats:false
+  });
+
+  const settingSearcUsers = (users) => {
+    setSearchUsers(users);
+  }
+  const onSetContacts = async (event)=> {
+    event.preventDefault();
+    setContacts(true);
+    setChats(false);
+    onSearch(false);
+    console.log(chats, contacts);
+  };
+
+  const onSetChats = async (event)=> {
+    event.preventDefault();
+    setChats(true);
+    setContacts(false);
+    onSearch(false);
+    console.log(chats, contacts);
+  };
+ 
+  const onSearch = (v, searchResults) => {
+    // event.preventDefault();
+    setChatScreen(false);
+    if(v && searchResults && searchResults.length > 0) {
+      console.log("");
+      settingSearcUsers(searchResults);
+    }
+    console.log(search)
+    setTimeout(() => {
+      setSearch(v);
+    }, 10);
+   
     
-  // };
+  }
 
+  const onChatScreen = (v) => {
+    // event.preventDefault();
+    onSearch(false);
+    setChatScreen(v);
+  }
 
-  // const getContacts =  async()=>{
-  //   let res = await axios.get('/get/friends',config)
-  //   // console.log(res);
-  //   return res.data.contacts;
-  // };
-  // const getChats = ()=>{  return Promise.resolve(['shiva','prabhakar']) };
-  // console.log(getContacts());
-  // console.log(getChats());
+  const renderSearchUsersList = (args) => {
+    console.log("searchUsers in leftpane:",searchUsers,searchUsers.length);
+    return(
+          
+      <React.Fragment>
+        {searchUsers.length > 0 && (
+                <div className={clsx([ classes.user,classes.root])}>
+                    <UserSearchPop searchUsers={searchUsers}/>
+                </div>
+            )
+          }
+      </React.Fragment>
+  
+    )
+  }
 
-  console.log("props = ",props.s);
+  const renderMain = (args) => {
+    if(search) {
+      return(
+        <React.Fragment>
+          {searchUsers.length > 0 && (
+                  <div className={clsx([ classes.user,classes.root])}>
+                      <UserSearchPop searchUsers={searchUsers}/>
+                  </div>
+              )
+            }
+        </React.Fragment>
+      )
+    } else if(chatScreen) {
 
-  return (
-
-    <div className={classes.root}>
-
-      <CssBaseline />
-    <ButtonAppBar position="fixed" className={classes.appBar}/> 
-
-      <Drawer
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <Toolbar />
-        <div className={classes.drawerContainer}>
-        <IconLabelTabs/>
-        <ListUI show={props.s} />
-        </div>
-      </Drawer>
-      <main className={classes.content}>
-        <Toolbar />
-        <Typography paragraph>
+    } else {
+      console.log("returning lorem ipsum");
+      return (
+        <React.Fragment>
+            <Typography paragraph>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
           ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
           facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
@@ -134,33 +168,68 @@ var showChats;
           imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue eget
           arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem
           donec massa sapien faucibus et molestie ac.
-        </Typography>
-        <Typography paragraph>
-          Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla
-          facilisi etiam dignissim diam. Pulvinar elementum integer enim neque volutpat ac
-          tincidunt. Ornare suspendisse sed nisi lacus sed viverra tellus. Purus sit amet volutpat
-          consequat mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis risus sed
-          vulputate odio. Morbi tincidunt ornare massa eget egestas purus viverra accumsan in. In
-          hendrerit gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem et
-          tortor. Habitant morbi tristique senectus et. Adipiscing elit duis tristique sollicitudin
-          nibh sit. Ornare aenean euismod elementum nisi quis eleifend. Commodo viverra maecenas
-          accumsan lacus vel facilisis. Nulla posuere sollicitudin aliquam ultrices sagittis orci a.
-        </Typography>
+            </Typography>
+            <Typography paragraph>
+              Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla
+              facilisi etiam dignissim diam. Pulvinar elementum integer enim neque volutpat ac
+              tincidunt. Ornare suspendisse sed nisi lacus sed viverra tellus. Purus sit amet volutpat
+              consequat mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis risus sed
+              vulputate odio. Morbi tincidunt ornare massa eget egestas purus viverra accumsan in. In
+              hendrerit gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem et
+              tortor. Habitant morbi tristique senectus et. Adipiscing elit duis tristique sollicitudin
+              nibh sit. Ornare aenean euismod elementum nisi quis eleifend. Commodo viverra maecenas
+              accumsan lacus vel facilisis. Nulla posuere sollicitudin aliquam ultrices sagittis orci a.
+            </Typography>
+        </React.Fragment>
+      )
+    }
+  }
+ 
+  const setMain = (renderMain({}));
+  
+  console.log("props = ",props);
+
+  return (
+
+    <div className={classes.root}>
+
+      <CssBaseline />
+    <ButtonAppBar position="fixed" className={classes.appBar} isSearch={onSearch} isChatScreen={onChatScreen}/> 
+
+      <Drawer
+        className={classes.drawer}
+        variant="permanent"
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      >
+        <Toolbar />
+        <div className={classes.drawerContainer}>
+        <IconLabelTabs onSetContacts={onSetContacts} onSetChats={onSetChats} isChatScreen={onChatScreen}/>
+            <React.Fragment>
+                <ListUI showContacts={contacts} showChats={chats} />
+
+            </React.Fragment>
+        </div>
+      </Drawer>
+      <main className={classes.content}>
+        <Toolbar />
+          {setMain}
       </main>
     </div>
   );
-}
+})
 
-const mapStateToProps = (state) =>{
+// const mapStateToProps = (state) =>{
  
-  console.log(state);
-  const s =  {
-    showChats : state.tabs.toggleVal.showChats,
-    showContacts : state.tabs.toggleVal.showContacts
- };
- console.log(s);
-  return { s };
- //  showChats = state.toggleVal.showChats;
-}
+//   console.log(state);
+//   const s =  {
+//     showChats : state.tabs.toggleVal.showChats,
+//     showContacts : state.tabs.toggleVal.showContacts
+//  };
+//  console.log(s);
+//   return { s };
+//  //  showChats = state.toggleVal.showChats;
+// }
 
-export default connect(mapStateToProps,{setContacts,setChats,getToggleVal})(LeftPane);
+export default LeftPane;
